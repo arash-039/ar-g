@@ -1,11 +1,11 @@
 #!/bin/sh
-set -e
 
-RELEASE="https://github.com/XTLS/Xray-core/releases/download/v26.3.27/Xray-linux-64.zip"
-TMPDIR="$(mktemp -d)"
+echo "downloading xray"
+wget -O ${PWD}/xray.zip https://github.com/XTLS/Xray-core/releases/download/v26.3.27/Xray-linux-64.zip
 
-curl -sL "$RELEASE" -o "$TMPDIR/xray.zip"
-unzip -q "$TMPDIR/xray.zip" -d "$TMPDIR"
-install -m 755 "$TMPDIR/xray" /usr/local/bin/xray
+echo "installing"
+unzip xray.zip && chmod +x xray
+mv xray /usr/local/bin/xray
 
-rm -rf "$TMPDIR"
+rm -rf ${PWD}/*
+echo "installed!"
