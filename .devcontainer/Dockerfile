@@ -1,20 +1,16 @@
 FROM debian:bookworm-slim
 
-ENV XRAY_VERSION=v26.3.27
+COPY install.sh /app/install.sh
 
-COPY setup.sh /tmp/setup.sh
-COPY config.json /etc/xray/g2ray.json
+WORKDIR /app
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-       bash curl wget unzip ca-certificates openssl \
-    && rm -rf /var/lib/apt/lists/* \
-    && chmod +x /tmp/setup.sh \
-    && /tmp/setup.sh \
-    && rm /tmp/setup.sh
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    bash git curl wget unzip tzdata openssl ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN echo 'printf "\n\033[1;32m[g2ray]\033[0m Connection string:\nvless://2166797c-f912-4a24-a467-c5d0c216cc2d@94.130.50.12:443?encryption=none&security=tls&type=xhttp&mode=packet-up&sni=${CODESPACE_NAME}-443.app.github.dev&path=%2F#g2ray\n"' >> /etc/bash.bashrc
+RUN chmod +x /app/install.sh && /app/install.sh
+COPY config.json /etc/config.json
 
-EXPOSE 443
+RUN echo 'echo -e "\n✅ VLESS LINK:\nvless://550e8400-e29b-41d4-a716-446655440000@94.130.50.12:443?encryption=none&security=tls&type=xhttp&mode=packet-up&sni=${CODESPACE_NAME}-443.app.github.dev&path=%2F#ghtun"' >> /etc/bash.bashrc
 
-CMD ["/usr/local/bin/xray", "run", "-c", "/etc/xray/g2ray.json"]
+CMD ["/usr/local/bin/xray", "-c", "/etc/config.json"]
